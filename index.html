@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 👇 This hides this page from search engines -->
+  <meta name="robots" content="noindex, nofollow">
+  <title>Seletor de Local</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📍</text></svg>">
+  <style>
+    * {
+      font-family: "Roboto", sans-serif;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      gap: 50px;
+      text-align: center;
+      background-color: #f0ebf8;
+    }
+
+    input, button, p {
+      font-size: 16px;
+      padding: 10px;
+      width: 375px;
+      max-width: 90vw;
+      border-radius: 12px;
+      box-sizing: border-box;
+      margin: 0;
+    }
+
+    .column-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    input {
+      border: 2px solid gray;
+    }
+    
+    button {
+      background-color: #643cb4;
+      cursor: pointer;
+      color: white;
+      border: none;
+    }
+
+    #copyBtn2 {
+      background-color: transparent;
+      color: gray;
+      border: 2px solid gray;
+    }
+
+    .pac-item {
+      padding: 15px 5px;
+      font-size: 16px;
+    }
+    
+    .pac-matched {
+      font-size: 16px;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="column-wrapper">
+    <h1>📍</h1>
+    <p>
+      Busque e selecione um local no campo abaixo
+      e copie as coordenadas para sua área de
+      transferência.
+    </p>
+  </div>
+  <input id="autocomplete" placeholder="Busque e selecione um local" type="text">
+  <div class="column-wrapper">
+    <button id="copyBtn1">Copiar coordenadas do local</button>
+    <button id="copyBtn2">Copiar coordenadas do CIn</button>
+  </div>
+</body>
+<script>
+  let autocomplete;
+  let latLng;
+  const copyAddressCoordsBtn = document.getElementById('copyBtn1');
+  const copyCInCoordsBtn = document.getElementById('copyBtn2');
+
+  function initAutocomplete() {
+    autocomplete = new google.maps.places.Autocomplete(
+      document.getElementById("autocomplete"),
+      {
+        componentRestrictions: { "country": ["BR"] },
+        fields: ["place_id", "geometry", "name"]
+      }
+    )
+    
+    autocomplete.addListener('place_changed', function () {
+      const place = autocomplete.getPlace();
+  
+      if (place.geometry) {
+        const lat = place.geometry.location.lat();
+        const lng = place.geometry.location.lng();
+        latLng = `${lat}, ${lng}`
+      } else {
+        console.log("No geometry available for this place.");
+      }
+    });
+  }
+
+  copyAddressCoordsBtn.addEventListener('click', () => {
+    if (latLng) {
+      navigator.clipboard.writeText(latLng)
+        .then(() => {
+          alert('Coordenadas copiadas para a área de transferência!');
+        })
+        .catch(err => {
+          console.error('Erro ao copiar coordenadas: ', err);
+        });
+    } else {
+      alert('Parece que ainda não há um endereço selecionado!');
+    }})
+
+  copyCInCoordsBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText("-8.055139050401625, -34.951325918257595")
+      .then(() => {
+        alert('Coordenadas copiadas para a área de transferência!')
+      })})
+
+</script>
+<script async
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDq2tNClWHVCAJG-Wj1aWCDPFJC30xwiOI&loading=async&libraries=places&callback=initAutocomplete">
+</script>
+</html>
